@@ -1,25 +1,78 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+author: "Vincent Phan"
+date: "September 16, 2015"
+output: html_document
+keep_md: true
 ---
 
 
-## Loading and preprocessing the data
+
+**Loading and Preprocessing the data**
+```{r}
+data <- read.csv('activity.csv')
+data <- na.omit(data)
+head(data)
+
+```
 
 
+**What is the mean total number of steps taken per day? 10766.19 steps**
 
-## What is mean total number of steps taken per day?
+```{r results='hide', message=FALSE, warning=FALSE}
+library(dplyr)
+```
 
+1.) Total Steps per day.
+```{r}
+gbDate <- group_by(data, date)
+totalSteps <- summarise(gbDate, total_steps=sum(steps))
+totalSteps
+```
 
+2.) Histogram of total steps taken each day.
+```{r}
+hist(totalSteps$total_steps, xlab = "Total steps", main ="Histogram: Total Steps")
+abline(v = mean(totalSteps$total_steps), col = "green", lwd = 10)
+abline(v = median(totalSteps$total_steps), col = "red", lwd = 4)
+legend("topright", c("mean", "median"), col=c("green", "red"), lty =c(1,1), lwd=2)
 
-## What is the average daily activity pattern?
+```
 
+3.) Mean of total steps.
+```{r}
+average <- summarise(gbDate, average_day = mean(steps))
+average
+```
 
+3.) Median of total steps.
+```{r}
+med <- summarise(gbDate, median_day = median(steps))
+med
+```
 
-## Imputing missing values
+**What is the average daily activity pattern?**
 
+1.) Time series plot using ggplot2
+```{r}
+library(ggplot2)
+gbInterval <- group_by(data, interval)
+totalStepsInterval <- summarize(gbInterval, average_steps = mean(steps))
 
+intervalMaxSteps <- filter(totalStepsInterval, average_steps == max(totalStepsInterval$average_steps))$interval
+maxSteps <- filter(totalStepsInterval, average_steps == max(totalStepsInterval$average_steps))$average_steps
 
-## Are there differences in activity patterns between weekdays and weekends?
+ggplot(totalStepsInterval, aes(interval, average_steps)) + geom_line() + geom_vline(xintercept=intervalMaxSteps, color="blue") + annotate("text", x = 1230, y = 206.1698, label = "V line = 5 Min interval MAX steps", color = "blue", size = 3) + ylab("Average Steps") + xlab("Time Intervals") + labs(title ="Time Series Plot(ggplot2)")
+
+```
+
+2.) The `r intervalMaxSteps` interval contains the maximum number of steps(`r maxSteps`).
+
+```{r}
+##Interval containing maximum number of steps
+intervalMaxSteps <- filter(totalStepsInterval, average_steps == max(totalStepsInterval$average_steps))$interval
+intervalMaxSteps
+##Max number of steps
+maxSteps <- filter(totalStepsInterval, average_steps == max(totalStepsInterval$average_steps))$average_steps
+maxSteps
+```
