@@ -12,6 +12,7 @@ keep_md: true
 ```{r}
 data <- read.csv('activity.csv')
 data <- na.omit(data)
+data$date <- as.Date(data$date)
 head(data)
 
 ```
@@ -27,7 +28,7 @@ library(dplyr)
 ```{r}
 gbDate <- group_by(data, date)
 totalSteps <- summarise(gbDate, total_steps=sum(steps))
-totalSteps
+as.data.frame(totalSteps)
 ```
 
 2.) Histogram of total steps taken each day.
@@ -39,17 +40,16 @@ legend("topright", c("mean", "median"), col=c("green", "red"), lty =c(1,1), lwd=
 
 ```
 
-3.) Mean of total steps.
+
+3.) Mean and median of total steps taken per day.
 ```{r}
-average <- summarise(gbDate, average_day = mean(steps))
-average
+##mean
+mean(totalSteps$total_steps)
+
+##median
+median(totalSteps$total_steps)
 ```
 
-3.) Median of total steps.
-```{r}
-med <- summarise(gbDate, median_day = median(steps))
-med
-```
 
 **What is the average daily activity pattern?**
 
@@ -76,3 +76,20 @@ intervalMaxSteps
 maxSteps <- filter(totalStepsInterval, average_steps == max(totalStepsInterval$average_steps))$average_steps
 maxSteps
 ```
+
+**Imputing missing values
+1.) Calculating & reporting total number of missing values in the dataset.
+```{r}
+dataNA <- read.csv("activity.csv")
+summary(dataNA)
+## there are total of 2304 NA's
+```
+
+
+meanSteps <- summarise(gbDate, mean_steps=mean(steps))
+
+test <- read.csv('activity.csv')
+test$date <- as.Date(test$date)
+
+
+aggdata <- aggregate(test, list(date), FUN=mean, na.rm=TRUE)
