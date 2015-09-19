@@ -17,6 +17,7 @@ data <- read.csv('activity.csv')
 data <- na.omit(data)
 data$date <- as.Date(data$date)
 head(data)
+
 ```
 
 ```
