@@ -17,7 +17,6 @@ data <- read.csv('activity.csv')
 data <- na.omit(data)
 data$date <- as.Date(data$date)
 head(data)
-
 ```
 
 ```
@@ -142,13 +141,6 @@ median(totalSteps$total_steps)
 
 ```r
 library(ggplot2)
-```
-
-```
-## Warning: package 'ggplot2' was built under R version 3.2.2
-```
-
-```r
 gbInterval <- group_by(data, interval)
 totalStepsInterval <- summarize(gbInterval, average_steps = mean(steps))
 
@@ -183,8 +175,9 @@ maxSteps
 ## [1] 206.1698
 ```
 
-###**Imputing missing values
-####1.) Calculating & reporting total number of missing values in the dataset.
+###**Imputing missing values**
+
+####1.) Calculating & reporting total number of missing values in the dataset. There are 2304 NAs.
 
 ```r
 dataNA <- read.csv("activity.csv")
@@ -206,8 +199,7 @@ summary(dataNA)
 ## there are total of 2304 NA's
 ```
 
-####2.) I will be defining mean of steps for each 5-minutes interval of each day. For missing values, I will be replacing
-####each value with the mean of steps of that specific 5-minutes interval.
+####2.) I will be defining mean of steps for each 5-minutes interval of each day. For missing values, I will be replacing each value with the mean of steps of that specific 5-minutes interval.
 
 
 ####3.) New dataset with all NA replaced
@@ -406,6 +398,7 @@ length(totalSteps$total_steps)
 
 ###Are there differences in activity patterns between weekdays and weekends? YES
 
+#### 1.) Making a new factor variable in data with 2 variables: Day
 
 ```r
 ## Adding day to newDF
@@ -424,10 +417,43 @@ averageStepsWeekday <- summarize(group_by(onlyWeekday, interval), average_steps=
 averageStepsWeekday$Day <- "Weekday"
 
 averageDay <- rbind(averageStepsWeekend, averageStepsWeekday)
+head(filter(averageDay, Day == "Weekday"))
+```
 
+```
+## Source: local data frame [6 x 3]
+## 
+##   interval average_steps     Day
+## 1        0    2.25115304 Weekday
+## 2        5    0.44528302 Weekday
+## 3       10    0.17316562 Weekday
+## 4       15    0.19790356 Weekday
+## 5       20    0.09895178 Weekday
+## 6       25    1.59035639 Weekday
+```
+
+```r
+head(filter(averageDay, Day == "Weekend"))
+```
+
+```
+## Source: local data frame [6 x 3]
+## 
+##   interval average_steps     Day
+## 1        0   0.214622642 Weekend
+## 2        5   0.042452830 Weekend
+## 3       10   0.016509434 Weekend
+## 4       15   0.018867925 Weekend
+## 5       20   0.009433962 Weekend
+## 6       25   3.511792453 Weekend
+```
+
+#### Panel plot - Time series plot with Lattice.
+
+```r
 library(lattice)
 
 xyplot(average_steps~interval|Day, data = averageDay, layout=c(1,2), type="l", ylab="Number of steps", xlab="Interval")
 ```
 
-![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png) 
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png) 

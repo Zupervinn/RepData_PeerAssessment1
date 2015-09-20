@@ -79,16 +79,16 @@ maxSteps <- filter(totalStepsInterval, average_steps == max(totalStepsInterval$a
 maxSteps
 ```
 
-###**Imputing missing values
-####1.) Calculating & reporting total number of missing values in the dataset.
+###**Imputing missing values**
+
+####1.) Calculating & reporting total number of missing values in the dataset. There are 2304 NAs.
 ```{r}
 dataNA <- read.csv("activity.csv")
 summary(dataNA)
 ## there are total of 2304 NA's
 ```
 
-####2.) I will be defining mean of steps for each 5-minutes interval of each day. For missing values, I will be replacing
-####each value with the mean of steps of that specific 5-minutes interval.
+####2.) I will be defining mean of steps for each 5-minutes interval of each day. For missing values, I will be replacing each value with the mean of steps of that specific 5-minutes interval.
 
 
 ####3.) New dataset with all NA replaced
@@ -165,6 +165,7 @@ length(totalSteps$total_steps)
 
 ###Are there differences in activity patterns between weekdays and weekends? YES
 
+#### 1.) Making a new factor variable in data with 2 variables: Day
 ```{r}
 ## Adding day to newDF
 addDay <- data.frame(steps=newDF$steps, date=newDF$date, day=weekdays(newDF$date), interval=newDF$interval)
@@ -182,7 +183,13 @@ averageStepsWeekday <- summarize(group_by(onlyWeekday, interval), average_steps=
 averageStepsWeekday$Day <- "Weekday"
 
 averageDay <- rbind(averageStepsWeekend, averageStepsWeekday)
+head(filter(averageDay, Day == "Weekday"))
+head(filter(averageDay, Day == "Weekend"))
+     
+```
 
+#### Panel plot - Time series plot with Lattice.
+```{r}
 library(lattice)
 
 xyplot(average_steps~interval|Day, data = averageDay, layout=c(1,2), type="l", ylab="Number of steps", xlab="Interval")
